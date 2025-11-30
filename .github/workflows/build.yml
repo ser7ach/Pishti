@@ -45,10 +45,26 @@ jobs:
       if: matrix.os == 'ubuntu-latest'
       run: |
         fyne package -os linux -icon assets/ui/icon.png --release
+        
+        # Extract the tarball
         tar -xf Pishti.tar.xz
+        
+        # Debug: see what was extracted
+        echo "Contents after extraction:"
         find . -name "Pishti" -type f
-        mv usr/local/bin/Pishti ${{ matrix.output }} || mv */Pishti ${{ matrix.output }} || find . -name "Pishti" -executable -exec mv {} ${{ matrix.output }} \;
-        chmod +x ${{ matrix.output }}
+        
+        # Find and move the Pishti binary (more robust approach)
+        PISHTI_PATH=$(find . -name "Pishti" -type f -executable | head -1)
+        if [ -n "$PISHTI_PATH" ]; then
+          echo "Found Pishti at: $PISHTI_PATH"
+          mv "$PISHTI_PATH" ${{ matrix.output }}
+          chmod +x ${{ matrix.output }}
+          echo "Build successful"
+        else
+          echo "ERROR: Pishti binary not found!"
+          find . -type f -executable
+          exit 1
+        fi
     
     - name: Upload artifact
       uses: actions/upload-artifact@v4
