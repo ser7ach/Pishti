@@ -1,0 +1,20 @@
+# Executables
+*.exe
+Pishti
+pishti
+Pishti-linux
+pishti-linux
+
+# Build artifacts
+*.syso
+
+# Fyne build files
+fyne-cross/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
