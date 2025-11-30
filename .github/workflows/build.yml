@@ -45,23 +45,29 @@ jobs:
       if: matrix.os == 'ubuntu-latest'
       run: |
         fyne package -os linux -icon assets/ui/icon.png --release
+
+        # Debug: see what's in the tarball
+        echo "Tarball contents:"
+        tar -tf Pishti.tar.xz
         
         # Extract the tarball
         tar -xf Pishti.tar.xz
         
         # Debug: see what was extracted
         echo "Contents after extraction:"
+        find . -name "pishti" -type f
         find . -name "Pishti" -type f
         
-        # Find and move the Pishti binary (more robust approach)
-        PISHTI_PATH=$(find . -name "Pishti" -type f -executable | head -1)
+        # Find and move the pishti binary (case insensitive search)
+        PISHTI_PATH=$(find . -type f -iname "pishti" -executable | head -1)
         if [ -n "$PISHTI_PATH" ]; then
-          echo "Found Pishti at: $PISHTI_PATH"
+          echo "Found binary at: $PISHTI_PATH"
           mv "$PISHTI_PATH" ${{ matrix.output }}
           chmod +x ${{ matrix.output }}
           echo "Build successful"
         else
-          echo "ERROR: Pishti binary not found!"
+          echo "ERROR: Binary not found!"
+          echo "All executable files:"
           find . -type f -executable
           exit 1
         fi
