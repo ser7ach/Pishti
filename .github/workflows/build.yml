@@ -32,17 +32,21 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y libgl1-mesa-dev xorg-dev libasound2-dev
     
-    - name: Install fyne CLI
-      run: go install fyne.io/fyne/v2/cmd/fyne@latest
+    - name: Install fyne CLI (new version)
+      run: go install fyne.io/tools/cmd/fyne@latest
     
     - name: Build with Fyne (Windows)
       if: matrix.os == 'windows-latest'
-      run: fyne package -os windows -icon assets/ui/icon.png -release -o ${{ matrix.output }}
+      run: |
+        fyne package -os windows -icon assets/ui/icon.png --release
+        move *.exe ${{ matrix.output }}
     
     - name: Build with Fyne (Linux)
       if: matrix.os == 'ubuntu-latest'
       run: |
-        fyne package -os linux -icon assets/ui/icon.png -release -o ${{ matrix.output }}
+        fyne package -os linux -icon assets/ui/icon.png --release
+        mv Pishti.tar.xz Pishti.tar.xz.bak || true
+        find . -name "Pishti" -type f -executable -exec mv {} ${{ matrix.output }} \;
         chmod +x ${{ matrix.output }}
     
     - name: Upload artifact
